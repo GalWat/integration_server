@@ -16,7 +16,7 @@ class StatusesWorker:
         }
 
     def get_status(self, person):
-        return self.statuses.get(person, Statuses.ERROR)
+        return str(self.statuses.get(person, Statuses.ERROR))
 
     def change_status(self, person, status):
         self.statuses[person] = status
