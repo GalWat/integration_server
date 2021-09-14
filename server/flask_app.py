@@ -29,7 +29,7 @@ def change_status():
 @app.route('/update_server', methods=['POST'])
 def webhook():
     if request.method == 'POST':
-        repo = git.Repo('/home/pythonevenings/repo')
+        repo = git.Repo('/home/GalWat')
         origin = repo.remotes.origin
         origin.pull()
         return 'Updated PythonAnywhere successfully', 200
