@@ -15,6 +15,9 @@ class StatusesWorker:
             'sveta': Statuses.DEFAULT
         }
 
+    def all_statuses(self):
+        return {key: value.value for key, value in self.statuses.items()}
+
     def get_status(self, person):
         return self.statuses.get(person, Statuses.ERROR).value
 
