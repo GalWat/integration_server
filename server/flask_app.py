@@ -10,7 +10,7 @@ statuses_worker = StatusesWorker()
 
 @app.route('/')
 def processing():
-    return '\n'.join(statuses_worker.all_statuses())
+    return ' | '.join(statuses_worker.all_statuses())
 
 
 @app.route('/status', methods=['POST'])
