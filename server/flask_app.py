@@ -22,7 +22,7 @@ def get_status():
 @app.route('/change-status', methods=['POST'])
 def change_status():
     data = request.json
-    return statuses_worker.change_status(data['person'], data['status'])
+    return statuses_worker.change_status(data['person'], Statuses(data['status']))
 
 
 @app.route('/update_server', methods=['POST'])
