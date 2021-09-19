@@ -5,14 +5,14 @@ info:
 servers:
   - url: 'https://galwat.pythonanywhere.com/'
 paths:
-  /user:
+  /status:
     get:
-      summary: 'Sample endpoint: Returns details about a particular user'
+      summary: 'Returns status of particular user'
       operationId: listUser
       tags:
         - user
       parameters:
-        - name: id
+        - name: person
           in: query
           description: ID of the user
           required: true
