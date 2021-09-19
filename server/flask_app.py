@@ -1,7 +1,7 @@
-from flask import Flask, request, json
+from flask import Flask, request
 import git
 
-from statuses_worker import Statuses, StatusesWorker
+from workers import StatusesWorker
 
 app = Flask(__name__)
 
@@ -26,12 +26,17 @@ def get_status():
 @app.route('/status', methods=['POST'])
 def change_status():
     data = request.json
-    statuses_worker.change_status(data['person'], Statuses.__getattr__(data['status']))
+    statuses_worker.change_status(data['person'], data['status'])
     return "OK"
 
 
+@app.route('/telegram', methods=['POST'])
+def telegram_request():
+    pass
+
+
 @app.route('/update_server', methods=['POST'])
-def webhook():
+def update_webhook():
     if request.method == 'POST':
         repo = git.Repo('/home/GalWat')
         origin = repo.remotes.origin

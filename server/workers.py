@@ -9,6 +9,10 @@ class Statuses(Enum):
     ERROR = "Ошибка"
 
 
+class Emotions(Enum):
+    GOOD = "Test"
+
+
 class StatusesWorker:
     def __init__(self):
         self.statuses = {
@@ -23,4 +27,4 @@ class StatusesWorker:
         return self.statuses.get(person, Statuses.ERROR).value
 
     def change_status(self, person, status):
-        self.statuses[person] = status
+        self.statuses[person] = Statuses.__getattr__(status)
