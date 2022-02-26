@@ -1,11 +1,16 @@
-from flask import Flask, request, json
+from flask import Flask, request
 import git
 
-from statuses_worker import Statuses, StatusesWorker
+from triggers.hook_trigger_service import HookTriggerService
+from triggers.polling_trigger_service import PollingTriggerService
+from jobs.job_service import JobService
 
 app = Flask(__name__)
 
-statuses_worker = StatusesWorker()
+hook_trigger_service = HookTriggerService()
+polling_trigger_service = PollingTriggerService()
+
+job_service = JobService(hook=hook_trigger_service, polling=polling_trigger_service)
 
 
 @app.route('/')
@@ -13,25 +18,22 @@ def processing():
     return 'OK'
 
 
-@app.route('/status', methods=['GET'])
-def get_status():
-    person = request.args.get('person')
+@app.route('/triggers/<service>', methods=['POST', 'GET'])
+def incoming_webhook_trigger(service):
+    data = dict()
 
-    if person:
-        return statuses_worker.get_status(person)
+    if request.method == 'POST':
+        data = request.json
+    elif request.method == 'GET':
+        data = request.args
 
-    return ' | '.join(statuses_worker.all_statuses())
-
-
-@app.route('/status', methods=['POST'])
-def change_status():
-    data = request.json
-    statuses_worker.change_status(data['person'], Statuses.__getattr__(data['status']))
-    return "OK"
+    response = hook_trigger_service.invoke_trigger(service, request.method, data)
+    if response:
+        return response
 
 
 @app.route('/update_server', methods=['POST'])
-def webhook():
+def update_hook():
     if request.method == 'POST':
         repo = git.Repo('/home/GalWat')
         origin = repo.remotes.origin
@@ -39,3 +41,7 @@ def webhook():
         return 'Updated PythonAnywhere successfully', 200
     else:
         return 'Wrong event type', 400
+
+
+if __name__ == '__main__':
+    app.run()
