@@ -27,7 +27,9 @@ def incoming_webhook_trigger(service):
     elif request.method == 'GET':
         data = request.args
 
-    hook_trigger_service.invoke_trigger(service, data)
+    response = hook_trigger_service.invoke_trigger(service, request.method, data)
+    if response:
+        return response
 
 
 @app.route('/update_server', methods=['POST'])
@@ -39,3 +41,7 @@ def update_hook():
         return 'Updated PythonAnywhere successfully', 200
     else:
         return 'Wrong event type', 400
+
+
+if __name__ == '__main__':
+    app.run()
