@@ -1,4 +1,6 @@
 import importlib
+import warnings
+
 from pathlib import Path
 
 from server.triggers import HookTrigger, PollingTrigger
@@ -31,7 +33,7 @@ class JobService:
                 elif isinstance(trigger, PollingTrigger):
                     self.polling_trigger_service.add_trigger(trigger)
                 else:
-                    raise RuntimeWarning(f'trigger has unexpected type: {job} - {trigger}')
+                    warnings.warn(f'trigger has unexpected type: {job} - {trigger}')
                     continue
 
                 trigger.attach_job(job_object)
