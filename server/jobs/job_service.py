@@ -3,7 +3,7 @@ import warnings
 
 from pathlib import Path
 
-from server.triggers import HookTrigger, PollingTrigger
+from .trigger_types import HookTrigger, PollingTrigger
 
 
 class JobService:
@@ -29,11 +29,8 @@ class JobService:
 
             for trigger in job_object.triggers:
                 if isinstance(trigger, HookTrigger):
-                    self.hook_trigger_service.add_trigger(trigger)
+                    self.hook_trigger_service.create_trigger(trigger, job_object)
                 elif isinstance(trigger, PollingTrigger):
-                    self.polling_trigger_service.add_trigger(trigger)
+                    self.polling_trigger_service.create_trigger(trigger)
                 else:
                     warnings.warn(f'trigger has unexpected type: {job} - {trigger}')
-                    continue
-
-                trigger.attach_job(job_object)

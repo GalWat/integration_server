@@ -1,20 +1,23 @@
+from flask import abort
+
+
 class HookTriggerService:
     def __init__(self):
         self.triggers = {}
 
-    def add_trigger(self, trigger):
+    def create_trigger(self, trigger, job):
         if not self.triggers.get(trigger.service_name):
             self.triggers[trigger.service_name] = {}
 
         for method in trigger.methods:
-            self.triggers[trigger.service_name][method] = trigger
+            self.triggers[trigger.service_name][method] = job
 
     def invoke_trigger(self, service_name, method, data):
         trigger = self.triggers.get(service_name)
-        trigger = trigger.get(method) if trigger else None
+        job = trigger.get(method) if trigger else None
         if not trigger:
-            return None
+            abort(404)
 
-        response = trigger.invoke(data)
+        response = job.execute(data)
         if response:
             return response

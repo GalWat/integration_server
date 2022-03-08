@@ -1,5 +1,5 @@
 from server.connectors import LocalFSConnector
-from server.triggers import HookTrigger
+from ..trigger_types import HookTrigger
 from pathlib import Path
 
 from . import Statuses
