@@ -1,0 +1,36 @@
+services:
+  integration-server:
+    container_name: integration-server
+    build: .
+    command: uwsgi --http-socket 0.0.0.0:5000 --wsgi-file server/app.py --callable app
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.server.rule=Host("galwat.ru")
+      - traefik.http.routers.server.tls=true
+      - traefik.http.routers.server.tls.certresolver=letsencrypt
+      - traefik.http.routers.server.entrypoints=websecure
+      - traefik.http.services.server.loadbalancer.server.port=5000
+
+  traefik:
+    image: traefik:2.9.9
+    container_name: traefik
+    command:
+      - --accesslog=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.email=watts-galeo@ya.ru
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.permanent=true
+#       - --certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /letsencrypt:/letsencrypt
+    ports:
+     - 80:80
+     - 443:443
