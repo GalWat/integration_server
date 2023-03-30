@@ -1,3 +1,6 @@
+from loguru import logger
+
+
 class HookTriggerService:
     def __init__(self):
         self.triggers = {}
@@ -8,6 +11,7 @@ class HookTriggerService:
 
         for method in trigger.methods:
             self.triggers[trigger.service_name][method] = trigger
+            logger.info(f"Added trigger of type {type(trigger).__name__}: {method} /{trigger.service_name}")
 
     def invoke_trigger(self, service_name, method, data):
         trigger = self.triggers.get(service_name)

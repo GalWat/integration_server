@@ -1,9 +1,9 @@
 from flask import Flask, request
-import git
 
-from triggers.hook_trigger_service import HookTriggerService
-from triggers.polling_trigger_service import PollingTriggerService
-from jobs.job_service import JobService
+from server.triggers.hook_trigger_service import HookTriggerService
+from server.triggers.polling_trigger_service import PollingTriggerService
+from server.jobs.job_service import JobService
+from loguru import logger
 
 app = Flask(__name__)
 
@@ -27,21 +27,15 @@ def incoming_webhook_trigger(service):
     elif request.method == 'GET':
         data = request.args
 
+    logger.info(f"Incoming request: {request.method} /triggers/{service} Data: {data}")
+
     response = hook_trigger_service.invoke_trigger(service, request.method, data)
     if response:
         return response
 
 
-@app.route('/update_server', methods=['POST'])
-def update_hook():
-    if request.method == 'POST':
-        repo = git.Repo('/home/GalWat')
-        origin = repo.remotes.origin
-        origin.pull()
-        return 'Updated PythonAnywhere successfully', 200
-    else:
-        return 'Wrong event type', 400
-
-
 if __name__ == '__main__':
-    app.run()
+    app.run(
+        port=8080,
+        ssl_context='adhoc',
+    )

@@ -1,7 +1,9 @@
 import importlib
 from pathlib import Path
+import warnings
 
 from server.triggers import HookTrigger, PollingTrigger
+from loguru import logger
 
 
 class JobService:
@@ -13,11 +15,12 @@ class JobService:
 
         p = Path('')
 
+        logger.info("Start collecting jobs")
         for item in p.glob('**/jb_*.py'):
             if not item.is_file():
                 continue
 
-            print(item)
+            logger.info(f"Collected {item}")
 
             job = importlib.import_module(f'{".".join(item.parts[:-1])}.{item.stem}')
             self.jobs.append(job)
@@ -31,7 +34,7 @@ class JobService:
                 elif isinstance(trigger, PollingTrigger):
                     self.polling_trigger_service.add_trigger(trigger)
                 else:
-                    raise RuntimeWarning(f'trigger has unexpected type: {job} - {trigger}')
+                    warnings.warn(f'trigger has unexpected type: {job} - {trigger}')
                     continue
 
                 trigger.attach_job(job_object)

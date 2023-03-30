@@ -3,4 +3,4 @@
 .secrets.*
 settings.yaml
 *.idea
-/.venv/
+.venv
